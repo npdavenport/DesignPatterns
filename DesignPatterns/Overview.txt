@@ -1,0 +1,123 @@
+﻿------------------- CREATIONAL -------------------
+
+Builder: When piecewise object construction is complicated, provide an API for doing it succinctly.
+	When: When construction gets a little bit too complicated
+	Motivation:
+		- Some objects are simple and can be created in a single constructor call
+		- Other object require a lot of ceremony to create
+		- Having an object with 10 constructor arguments is not productive
+		- Instead, opt for piecewise construction
+		- Builder provides an API for constructing an object step-by-step
+	Summary:
+		- A builder is a separate component for building an object
+		- Can either give builder a constructor or return it via a static function
+		- To make builder fluent, return this
+		- Different facets of an object can be built with different builders working in tandem via a base class
+
+Factories: A component responsible solely for the wholesale (not piecewise) creation of objects.
+	Motivation:
+		- Object creation logic becomes too convoluted
+		- Constructor is not descriptive
+			- Name mandated by name of containing type
+			Cannot overload with same sets of arguments with different names
+			Can turn into 'optional parameter hell'
+		- Object creation (non-piecewise, unlike Builder) can be outsourced to
+			- A separate function (Factory Method)
+			- That may exist in a separate class (Factory)
+			- Can create hierarchy of factories with Abstract Factory
+	Summary:
+		- A factory method is a static method that creates objects
+		- A factory can take care of object creation
+		- A factory can be external or reside inside the object as an inner class
+		- Hierarchies of factories can be used to create related objects
+
+Prototype: A partially or fully initialized object that you copy (clone) and make use of.
+	When: When it's easier to copy an existing object to fully initialize a new one.
+	Motivation:
+		- Complicated objects (e.g. cars) aren't designed from scratch
+			- Reiterate existing designs
+		- An existing (partially or fully constructed) design is a Prototype
+		- We make a copy (clone) the prototype and customize it
+			- Requires 'deep copy' support
+		- We make the cloning convenient (e.e. via a Factory)
+	Summary:
+		- To implement a prototype, partially construct an object and store it somewhere
+		- Clone the prototype
+			- Implement your own deep copy functionality; or
+			- Serialize and deserialize
+		- Customize the resulting instance
+
+Singleton: A component which is instantiated only once.
+	Motivation:
+		- For some components it only makes sense to have one in the system
+			- Database repository
+			- Object factory
+		- E.g. the constructor call is expensive
+			- We only do it once
+			- We provide everyone with the same instance
+		- Want to prevent anyone creating additional copies
+		- Need to take care of lazy instantiation and thread safety
+	Summary:
+		- Making a 'safe' singleton is easy: construct a static Lazy<T> and return its Value
+		- Singletons are difficult to test
+		- Instead of directly using a singleton, consider depending on an abstract (e.g. an interface)
+		- Consider defining singleton lifetime in DI container
+
+------------------- STRUCTURAL -------------------
+Adapter: A construct which adapts an existing interface X to conform to the required interface Y.
+	Overview:
+		- Electrical devices have different power (interface) requirements
+			- Voltage (5V, 220V)
+			- Socket/plug type (Europe, UK, USA)
+		- We cannot modify our gadgets to support every possible interface
+			- Some support possible (e.g. 120/220V)
+		- Thus, we use a special device (an adapter) to give us the interface we require from the interface we have
+	Summary:
+		- Implementing an Adapter is easy
+		- Determine the API you have and the API you need
+		- Create a component which aggregates (has a reference to, ...) the adaptee
+		- Intermediate representations can pile up: use caching and other optimizations
+
+Bridge: A mechanism that decouples an interface (hierarchy) from an implementation (hierarchy)
+	Motivation:
+		- Bridge prevents a 'Cartesian product' complexity explosion
+		- Example:
+			- Base class ThreadScheduler
+			- Can be preemptive or cooperative
+			- Can run on Windows or Unix
+			- End up with a 2x2 scenario: WindowsPTS, UnixPTS, WindowsCTS, UnixCTS
+		- Bridge pattern avoids the entity explosion
+	Summary:
+		- Decouple abstraction from implementation
+		- Both can exist as hierarchies
+		- A stronger form of encapsulation
+
+Composite: A mechanism for treating individual (scalar) objects and compositions of objects in a uniform manner.
+	Motivation:
+		- Objects user other object's fields/properties/members through inheritance and composition
+		- Composition lets us  make compound objects
+			- E.g. a mathematical expression composed of simple expressions; or
+			- A grouping of shapes that consists of several shapes
+		- Composite design pattern is used to treat both single (scalar) and composite object uniformly
+			- i.e. Foo and Collection<Foo> have certain common APIs
+	Summary:
+		- Objects can use other objects via inheritance/composition
+		- Some composed and singular object need similar/identical behaviors
+		- Composite design pattern lets us treat both types of objects uniformly
+		- C# has special support for the enumeration concept
+		- A single object can masquerade as a collection with yield return this;
+
+Decorator: Facilities the addition of behaviors to individual objects without inheriting from them.
+	Motivation:
+		- Want to augment an object with additional functionality
+		- Do not want to rewrite or alter existing code (Open Closed Principle)
+		- Want to keep new functionality separate (Single Responsibility Principle)
+		- Need to be able to interact with existing structures
+		- Two options:
+			- Inherit from required object if possible; some objects are sealed
+			- Build a Decorator, which simply references the decorated object(s)
+
+	Summary:
+		- A decorator keeps the refernece to the decorated object(s)
+		- May or may not proxy over calls
+			- Use R# Generate Delegated Members
